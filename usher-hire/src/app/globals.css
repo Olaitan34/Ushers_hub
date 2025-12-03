@@ -31,17 +31,32 @@ textarea,
 select {
   color: #111827 !important;
   background-color: white !important;
+  -webkit-text-fill-color: #111827 !important;
 }
 
 input::placeholder,
 textarea::placeholder {
   color: #9ca3af !important;
+  opacity: 0.6 !important;
 }
 
 /* Ensure date/time inputs are visible */
 input[type="date"],
 input[type="time"],
-input[type="datetime-local"] {
+input[type="datetime-local"],
+input[type="number"],
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  color: #111827 !important;
+  background-color: white !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+/* Force dark text in forms */
+form input,
+form textarea,
+form select {
   color: #111827 !important;
   background-color: white !important;
 }
