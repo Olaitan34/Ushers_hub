@@ -228,9 +228,9 @@ export default function BrowseUshersPage() {
                   {/* Avatar */}
                   <div className="flex justify-center -mt-12 mb-4">
                     <div className="w-24 h-24 rounded-full border-4 border-white bg-white flex items-center justify-center overflow-hidden">
-                      {usherProfile.avatar_url || profile.avatar_url ? (
+                      {profile.avatar_url ? (
                         <img 
-                          src={usherProfile.avatar_url || profile.avatar_url} 
+                          src={profile.avatar_url} 
                           alt={profile.full_name}
                           className="w-full h-full object-cover"
                         />

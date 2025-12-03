@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd usher-hire && npm install && npm run build",
+  "outputDirectory": "usher-hire/.next",
+  "framework": "nextjs",
+  "installCommand": "cd usher-hire && npm install"
+}
