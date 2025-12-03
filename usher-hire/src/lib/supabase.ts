@@ -32,6 +32,7 @@ export interface UsherProfile {
   experience_years: number;
   skills: string[];
   availability: Record<string, any>;
+  availability_status: 'available' | 'busy' | 'unavailable';
   rating: number;
   total_events: number;
   bio?: string;

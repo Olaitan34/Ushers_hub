@@ -94,6 +94,12 @@ export default function SignUpPage() {
           .insert([
             {
               user_id: authData.user.id,
+              experience_years: 0,
+              skills: [],
+              availability: {},
+              availability_status: 'available',
+              rating: 0,
+              total_events: 0,
             },
           ])
           .select()

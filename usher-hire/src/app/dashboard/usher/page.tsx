@@ -29,19 +29,64 @@ export default function UsherDashboard() {
   const [upcomingBookings, setUpcomingBookings] = useState<any[]>([]);
   const [availableEvents, setAvailableEvents] = useState<Event[]>([]);
   const [profileCompletion, setProfileCompletion] = useState(0);
+  const [applyingTo, setApplyingTo] = useState<string | null>(null);
 
   useEffect(() => {
     checkUser();
   }, []);
 
+  const handleApplyToEvent = async (eventId: string) => {
+    try {
+      setApplyingTo(eventId);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Check if already applied
+      const { data: existingBooking } = await supabase
+        .from('bookings')
+        .select('id')
+        .eq('event_id', eventId)
+        .eq('usher_id', user.id)
+        .single();
+
+      if (existingBooking) {
+        alert('You have already applied to this event');
+        return;
+      }
+
+      // Create booking
+      const { error } = await supabase
+        .from('bookings')
+        .insert({
+          event_id: eventId,
+          usher_id: user.id,
+          status: 'pending',
+          applied_at: new Date().toISOString(),
+        });
+
+      if (error) throw error;
+
+      alert('Application submitted successfully!');
+      checkUser(); // Refresh data
+    } catch (error: any) {
+      console.error('Error applying:', error);
+      alert('Failed to apply. Please try again.');
+    } finally {
+      setApplyingTo(null);
+    }
+  };
+
   const checkUser = async () => {
     try {
+      console.log('Starting dashboard load...');
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       
       if (authError || !user) {
         router.push('/auth/signin');
         return;
       }
+
+      console.log('User authenticated:', user.id);
 
       // Fetch user profile
       const { data: profileData, error: profileError } = await supabase
@@ -57,6 +102,7 @@ export default function UsherDashboard() {
         return;
       }
 
+      console.log('Profile loaded:', profileData.full_name);
       setProfile(profileData);
 
       // Fetch usher profile
@@ -67,6 +113,7 @@ export default function UsherDashboard() {
         .single();
 
       if (usherError) throw usherError;
+      console.log('Usher profile loaded');
       setUsherProfile(usherData);
 
       // Calculate profile completion
@@ -106,16 +153,41 @@ export default function UsherDashboard() {
       });
 
       // Fetch available events
+      console.log('Fetching available events...');
+      const today = new Date().toISOString().split('T')[0];
+      console.log('Today date:', today);
+      
+      // First, let's check if there are ANY events at all
+      const { data: allEvents, error: allEventsError } = await supabase
+        .from('events')
+        .select('*');
+      
+      console.log('Total events in database:', allEvents?.length || 0);
+      if (allEvents && allEvents.length > 0) {
+        console.log('Sample event:', allEvents[0]);
+      }
+      
       const { data: eventsData, error: eventsError } = await supabase
         .from('events')
         .select('*')
         .eq('status', 'published')
-        .gte('event_date', new Date().toISOString().split('T')[0])
+        .gte('event_date', today)
         .order('event_date', { ascending: true })
-        .limit(5);
+        .limit(10);
 
-      if (eventsError) throw eventsError;
-      setAvailableEvents(eventsData || []);
+      if (eventsError) {
+        console.error('Error fetching events:', eventsError);
+        setAvailableEvents([]);
+      } else {
+        console.log('Raw events from DB:', eventsData);
+        console.log('Available events count:', eventsData?.length || 0);
+        // Filter out events the usher has already applied to
+        const appliedEventIds = bookingsData?.map(b => b.event_id) || [];
+        console.log('Already applied to event IDs:', appliedEventIds);
+        const filteredEvents = eventsData?.filter(e => !appliedEventIds.includes(e.id)) || [];
+        console.log('Filtered events count:', filteredEvents.length);
+        setAvailableEvents(filteredEvents);
+      }
 
     } catch (error: any) {
       console.error('Error loading dashboard:', error);
@@ -192,7 +264,10 @@ export default function UsherDashboard() {
                   A complete profile helps you get more event opportunities
                 </p>
               </div>
-              <button className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 text-sm font-medium">
+              <button 
+                onClick={() => router.push('/dashboard/usher/profile')}
+                className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 text-sm font-medium"
+              >
                 Complete Profile
               </button>
             </div>
@@ -338,8 +413,11 @@ export default function UsherDashboard() {
 
         {/* Available Events */}
         <div className="bg-white shadow rounded-lg mb-8">
-          <div className="px-6 py-5 border-b border-gray-200">
+          <div className="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
             <h3 className="text-lg font-medium text-gray-900">Available Events</h3>
+            <span className="text-sm text-gray-500">
+              {loading ? 'Loading...' : `${availableEvents.length} events`}
+            </span>
           </div>
           <div className="px-6 py-5">
             {availableEvents.length > 0 ? (
@@ -363,8 +441,12 @@ export default function UsherDashboard() {
                         <span className="text-2xl font-bold text-indigo-600">
                           ${event.pay_rate}
                         </span>
-                        <button className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium">
-                          Apply Now
+                        <button 
+                          onClick={() => handleApplyToEvent(event.id)}
+                          disabled={applyingTo === event.id}
+                          className="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {applyingTo === event.id ? 'Applying...' : 'Apply Now'}
                         </button>
                       </div>
                     </div>
@@ -372,7 +454,17 @@ export default function UsherDashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-8">No available events at the moment</p>
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-2">No available events at the moment</p>
+                <p className="text-sm text-gray-400">
+                  Events will appear here once planners create and publish them
+                </p>
+                {loading && (
+                  <div className="mt-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -380,40 +472,76 @@ export default function UsherDashboard() {
         {/* Upcoming Bookings */}
         <div className="bg-white shadow rounded-lg">
           <div className="px-6 py-5 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">Your Upcoming Bookings</h3>
+            <h3 className="text-lg font-medium text-gray-900">Your Applications & Bookings</h3>
           </div>
           <div className="px-6 py-5">
             {upcomingBookings.length > 0 ? (
               <div className="space-y-4">
                 {upcomingBookings.map((booking) => {
                   const event = booking.events as any;
+                  const getStatusInfo = (status: string) => {
+                    switch(status) {
+                      case 'pending':
+                        return { 
+                          color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                          icon: '⏳',
+                          message: 'Waiting for planner approval'
+                        };
+                      case 'accepted':
+                        return { 
+                          color: 'bg-green-100 text-green-800 border-green-200',
+                          icon: '✅',
+                          message: 'Confirmed! See you at the event'
+                        };
+                      case 'rejected':
+                        return { 
+                          color: 'bg-red-100 text-red-800 border-red-200',
+                          icon: '❌',
+                          message: 'Application was not accepted'
+                        };
+                      case 'completed':
+                        return { 
+                          color: 'bg-blue-100 text-blue-800 border-blue-200',
+                          icon: '🎉',
+                          message: 'Event completed'
+                        };
+                      default:
+                        return { color: 'bg-gray-100 text-gray-800', icon: '•', message: status };
+                    }
+                  };
+                  
+                  const statusInfo = getStatusInfo(booking.status);
+                  
                   return (
-                    <div key={booking.id} className="border border-gray-200 rounded-lg p-4">
+                    <div key={booking.id} className={`border-2 rounded-lg p-4 ${statusInfo.color}`}>
                       <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="text-lg font-semibold text-gray-900">{event?.title}</h4>
-                          <p className="mt-1 text-sm text-gray-600">{event?.venue_address}</p>
-                          <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                            <span>📅 {new Date(event?.event_date).toLocaleDateString()}</span>
-                            <span>🕒 {event?.start_time}</span>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h4 className="text-lg font-semibold text-gray-900">{event?.title}</h4>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusInfo.color}`}>
+                              {statusInfo.icon} {booking.status.toUpperCase()}
+                            </span>
                           </div>
+                          <p className="text-sm text-gray-700 mb-2">{statusInfo.message}</p>
+                          <p className="mt-1 text-sm text-gray-600">{event?.venue_address}</p>
+                          <div className="mt-2 flex items-center space-x-4 text-sm text-gray-600">
+                            <span>📅 {new Date(event?.event_date).toLocaleDateString()}</span>
+                            <span>🕒 {event?.start_time} - {event?.end_time}</span>
+                            <span>💰 ${event?.pay_rate}</span>
+                          </div>
+                          <p className="mt-2 text-xs text-gray-500">
+                            Applied: {new Date(booking.applied_at || booking.created_at).toLocaleString()}
+                          </p>
                         </div>
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${
-                            booking.status === 'accepted'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}
-                        >
-                          {booking.status}
-                        </span>
                       </div>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-8">No upcoming bookings</p>
+              <p className="text-gray-500 text-center py-8">
+                No applications yet. Apply to events above!
+              </p>
             )}
           </div>
         </div>

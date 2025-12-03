@@ -155,12 +155,20 @@ export default function PlannerDashboard() {
             </h2>
             <p className="mt-1 text-gray-600">Manage your events and hire ushers</p>
           </div>
-          <Link
-            href="/dashboard/planner/events/create"
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium shadow-lg"
-          >
-            + Create Event
-          </Link>
+          <div className="flex gap-3">
+            <Link
+              href="/dashboard/planner/ushers"
+              className="px-6 py-3 bg-white border-2 border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 font-medium shadow-lg"
+            >
+              👥 Browse Ushers
+            </Link>
+            <Link
+              href="/dashboard/planner/events/create"
+              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium shadow-lg"
+            >
+              + Create Event
+            </Link>
+          </div>
         </div>
 
         {/* Stats Grid */}
@@ -364,14 +372,19 @@ export default function PlannerDashboard() {
                             ${event.pay_rate}/usher
                           </span>
                           <div className="flex space-x-2">
-                            <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-medium">
-                              View Details
+                            <button
+                              onClick={() => router.push(`/dashboard/planner/events/${event.id}/applications`)}
+                              className={`px-3 py-1 rounded-md text-sm font-medium ${
+                                pendingCount > 0
+                                  ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }`}
+                            >
+                              {pendingCount > 0 
+                                ? `Review ${pendingCount} Application${pendingCount !== 1 ? 's' : ''}`
+                                : 'Manage Applications'
+                              }
                             </button>
-                            {pendingCount > 0 && (
-                              <button className="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium">
-                                Review Applications
-                              </button>
-                            )}
                           </div>
                         </div>
                       </div>

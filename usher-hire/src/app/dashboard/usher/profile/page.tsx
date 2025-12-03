@@ -21,6 +21,7 @@ export default function UsherProfilePage() {
     bio: '',
     skills: '',
     certifications: '',
+    availability_status: 'available' as 'available' | 'busy' | 'unavailable',
   });
 
   useEffect(() => {
@@ -65,6 +66,7 @@ export default function UsherProfilePage() {
         bio: usherData.bio || '',
         skills: usherData.skills?.join(', ') || '',
         certifications: usherData.certifications?.join(', ') || '',
+        availability_status: usherData.availability_status || 'available',
       });
 
     } catch (error: any) {
@@ -112,6 +114,7 @@ export default function UsherProfilePage() {
           bio: formData.bio || null,
           skills: formData.skills ? formData.skills.split(',').map(s => s.trim()) : [],
           certifications: formData.certifications ? formData.certifications.split(',').map(s => s.trim()) : [],
+          availability_status: formData.availability_status,
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', user.id);
@@ -183,7 +186,7 @@ export default function UsherProfilePage() {
                     required
                     value={formData.full_name}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                   />
                 </div>
 
@@ -198,7 +201,7 @@ export default function UsherProfilePage() {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="+1 (555) 123-4567"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                   />
                 </div>
 
@@ -213,7 +216,7 @@ export default function UsherProfilePage() {
                     value={formData.avatar_url}
                     onChange={handleChange}
                     placeholder="https://example.com/photo.jpg"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                   />
                   <p className="mt-1 text-xs text-gray-500">
                     Add a link to your professional photo
@@ -241,7 +244,7 @@ export default function UsherProfilePage() {
                       value={formData.hourly_rate}
                       onChange={handleChange}
                       placeholder="25.00"
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                     />
                   </div>
 
@@ -256,9 +259,29 @@ export default function UsherProfilePage() {
                       min="0"
                       value={formData.experience_years}
                       onChange={handleChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label htmlFor="availability_status" className="block text-sm font-medium text-gray-700">
+                    Availability Status
+                  </label>
+                  <select
+                    name="availability_status"
+                    id="availability_status"
+                    value={formData.availability_status}
+                    onChange={(e) => setFormData(prev => ({ ...prev, availability_status: e.target.value as any }))}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
+                  >
+                    <option value="available">✅ Available - Ready to work</option>
+                    <option value="busy">⚠️ Busy - Limited availability</option>
+                    <option value="unavailable">❌ Unavailable - Not taking bookings</option>
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Event planners will see your availability status
+                  </p>
                 </div>
 
                 <div>
@@ -272,7 +295,7 @@ export default function UsherProfilePage() {
                     value={formData.bio}
                     onChange={handleChange}
                     placeholder="Tell event planners about yourself, your experience, and why you'd be a great usher..."
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                   />
                 </div>
 
@@ -287,7 +310,7 @@ export default function UsherProfilePage() {
                     value={formData.skills}
                     onChange={handleChange}
                     placeholder="Customer service, crowd management, event coordination (comma-separated)"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                   />
                   <p className="mt-1 text-xs text-gray-500">
                     Separate multiple skills with commas
@@ -305,7 +328,7 @@ export default function UsherProfilePage() {
                     value={formData.certifications}
                     onChange={handleChange}
                     placeholder="First Aid, CPR, Security License (comma-separated)"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                   />
                   <p className="mt-1 text-xs text-gray-500">
                     Separate multiple certifications with commas
