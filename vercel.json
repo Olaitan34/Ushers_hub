@@ -1,3 +1,5 @@
 {
-  "version": 2
+  "buildCommand": "cd usher-hire && npm run build",
+  "outputDirectory": "usher-hire/.next",
+  "installCommand": "cd usher-hire && npm install"
 }
