@@ -143,7 +143,7 @@ export default function CreateEventPage() {
                     required
                     value={formData.title}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                     placeholder="e.g., Corporate Conference 2024"
                   />
                 </div>
@@ -158,7 +158,7 @@ export default function CreateEventPage() {
                     rows={4}
                     value={formData.description}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                     placeholder="Provide details about your event..."
                   />
                 </div>
@@ -174,7 +174,7 @@ export default function CreateEventPage() {
                     required
                     value={formData.venue_address}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                     placeholder="123 Main St, City, State"
                   />
                 </div>
@@ -196,7 +196,7 @@ export default function CreateEventPage() {
                     value={formData.event_date}
                     onChange={handleChange}
                     min={new Date().toISOString().split('T')[0]}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                   />
                 </div>
 
@@ -212,7 +212,7 @@ export default function CreateEventPage() {
                       required
                       value={formData.start_time}
                       onChange={handleChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                     />
                   </div>
 
@@ -227,7 +227,7 @@ export default function CreateEventPage() {
                       required
                       value={formData.end_time}
                       onChange={handleChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                     />
                   </div>
                 </div>
@@ -245,7 +245,7 @@ export default function CreateEventPage() {
                       min="1"
                       value={formData.ushers_needed}
                       onChange={handleChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                     />
                   </div>
 
@@ -262,7 +262,7 @@ export default function CreateEventPage() {
                       step="0.01"
                       value={formData.pay_rate}
                       onChange={handleChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                       placeholder="0.00"
                     />
                   </div>
@@ -283,7 +283,7 @@ export default function CreateEventPage() {
                     rows={4}
                     value={formData.requirements}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                     placeholder="e.g., Must be punctual, friendly demeanor..."
                   />
                 </div>
@@ -298,7 +298,7 @@ export default function CreateEventPage() {
                     id="dress_code"
                     value={formData.dress_code}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
                     placeholder="e.g., Business formal, All black"
                   />
                 </div>
